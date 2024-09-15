@@ -67,7 +67,7 @@ function App() {
     <div className="bg-gray-100 text-gray-800 min-h-screen">
       <nav className="bg-blue-600 p-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
-          <span className="text-white text-2xl font-bold">Gesture Control</span>
+          <span className="text-white text-2xl font-bold">Gesture Control </span>
           <ul className="flex space-x-4">
             <li><button className="text-white hover:text-gray-200">Home</button></li>
             <li><button className="text-white hover:text-gray-200">About</button></li>
@@ -77,7 +77,7 @@ function App() {
       </nav>
 
       <div className="container mx-auto mt-10">
-        <h1 className="text-4xl font-bold text-center mb-6">Gesture Control Demo</h1>
+        <h1 className="text-4xl font-bold text-center mb-6">Gesture Control Cobot</h1>
         <div id="videoContainer" className="mx-auto bg-white p-4 rounded-lg shadow-lg relative">
           <video ref={videoRef} autoPlay className="rounded-lg w-full h-full object-cover"></video>
           <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full"></canvas>
