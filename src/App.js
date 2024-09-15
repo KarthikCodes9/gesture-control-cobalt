@@ -7,7 +7,19 @@ function App() {
   const canvasRef = useRef(null);
   const [status, setStatus] = useState('Waiting for camera...');
   const animationFrameIdRef = useRef(null);
-
+  const runDetection = useCallback((model) => {
+    if (videoRef.current && videoRef.current.readyState >= 2) {
+      model.detect(videoRef.current).then((predictions) => {
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        model.renderPredictions(predictions, canvas, context, videoRef.current);
+        animationFrameIdRef.current = requestAnimationFrame(() => runDetection(model));
+      }).catch((err) => {
+        console.error('Error during detection:', err);
+      });
+    }
+  }, []);
   const initializeHandTracking = useCallback(() => {
     const modelParams = {
       flipHorizontal: true,
@@ -22,7 +34,6 @@ function App() {
       setStatus('Hand tracking is ready. Make gestures!');
       handTrack.startVideo(videoRef.current).then(function (status) {
         if (status) {
-
           videoRef.current.addEventListener('loadeddata', () => {
             runDetection(loadedModel);
           });
@@ -34,27 +45,17 @@ function App() {
       console.error('Error loading hand tracking model:', err);
       setStatus('Error loading hand tracking model: ' + err.message);
     });
-  }, []);
+  }, [runDetection]); // I
 
-  const runDetection = useCallback((model) => {
-    if (videoRef.current && videoRef.current.readyState >= 2) {
-      model.detect(videoRef.current).then((predictions) => {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        model.renderPredictions(predictions, canvas, context, videoRef.current);
-        animationFrameIdRef.current = requestAnimationFrame(() => runDetection(model));
-      }).catch((err) => {
-        console.error('Error during detection:', err);
-      });
-    }
-  }, []);
+
 
   useEffect(() => {
+    const videoElement = videoRef.current; // Store videoRef.current in a variable
+
     navigator.mediaDevices.getUserMedia({ video: true })
       .then((stream) => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+        if (videoElement) {
+          videoElement.srcObject = stream;
           setStatus('Camera is ready. Initializing hand tracking...');
           initializeHandTracking();
         }
@@ -64,8 +65,8 @@ function App() {
       });
 
     return () => {
-
-      const stream = videoRef.current?.srcObject;
+      // Cleanup function
+      const stream = videoElement?.srcObject;
       const tracks = stream?.getTracks();
       tracks?.forEach((track) => track.stop());
 
@@ -73,7 +74,7 @@ function App() {
         cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [initializeHandTracking]);
+  }, [initializeHandTracking]); // Dependency array includes initializeHandTracking
 
   return (
     <div className="bg-[#7C93C3] text-gray-800 min-h-screen">
