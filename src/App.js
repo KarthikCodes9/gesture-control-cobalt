@@ -6,7 +6,7 @@ function App() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [status, setStatus] = useState('Waiting for camera...');
-  const animationFrameIdRef = useRef(null); // Ref to store the animation frame ID
+  const animationFrameIdRef = useRef(null); 
 
   const initializeHandTracking = useCallback(() => {
     const modelParams = {
@@ -22,7 +22,7 @@ function App() {
       setStatus('Hand tracking is ready. Make gestures!');
       handTrack.startVideo(videoRef.current).then(function (status) {
         if (status) {
-          // Listen for the `loadeddata` event to ensure video is fully ready
+          
           videoRef.current.addEventListener('loadeddata', () => {
             runDetection(loadedModel);
           });
@@ -37,7 +37,7 @@ function App() {
   }, []);
 
   const runDetection = useCallback((model) => {
-    if (videoRef.current && videoRef.current.readyState >= 2) { // Check if video is ready
+    if (videoRef.current && videoRef.current.readyState >= 2) { 
       model.detect(videoRef.current).then((predictions) => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
@@ -64,7 +64,7 @@ function App() {
       });
 
     return () => {
-      // Cleanup function: Stop video stream and cancel animation frame
+      
       const stream = videoRef.current?.srcObject;
       const tracks = stream?.getTracks();
       tracks?.forEach((track) => track.stop());
